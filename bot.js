@@ -145,11 +145,43 @@ const idx = {
             'q': 'What Sequelize method is used to delete a record from our database?',
             'a': 'post.destroy()'
          }, 
+    '31': {
+            'q': 'Define what a RDBMS is.',
+            'a': 'A software application that you run that connects to your programs, allowing you to store, modify, and retrieve data. '
+         }, 
+    '32': {
+            'q': 'Describe relational data.',
+            'a': 'In general, relational data is information that is connected to other pieces of information. When working with relational databases, we can connect two entries together utilizing foreign keys.'
+         }, 
+    '33': {
+            'q': 'Define a database.',
+            'a': 'The actual location that data is stored. A database can be made up of many tables that each store specific kinds of information.'
+         }, 
+    '34': {
+            'q': 'Define a database table.',
+            'a': 'Within a database, a table stores one specific kind of information. The records (entries) on these tables can be connected to records on other tables through the use of foreign keys.'
+         }, 
+    '35': {
+            'q': 'Describe the purpose of a primary key.',
+            'a': 'A primary key is used in the database as a unique identifier for the table. We often use an "id" field that simply increments with each entry. The incrementing ensures that each record has a unique identifier, even if their are other fields of the record that are repeated (two people with the same name would still need to have a unique identifier, for example). With a unique identifier, we can easily connect records within the table to records from other tables.'
+         }, 
+    '36': {
+            'q': 'Describe the purpose of a foreign key.',
+            'a': 'A foreign key is used as the connector from this record to the primary key of another table\'s record.'
+         }, 
+    '37': {
+            'q': 'Describe how to properly name things in PostgreSQL.',
+            'a': 'Names within postgres should generally consist of only lowercase letters, numbers, and underscores. Tables within a database are plural by convention, so a table for cats would typically be "cats" and office locations would be "office_locations" (all lowercase, underscores to replace spaces, plural)'
+         }, 
+    '38': {
+            'q': 'When working on the command line how do you sign in to a database other than the default?',
+            'a': 'By providing the ```psql``` command with an argument\n\n```psql <database>```\n\nIf already logged in as default:\n\n```\\c <database>```'
+         }, 
 };
 
 const regex = /robot/gi;
 function extractQ(index) {
-    const rando = Math.floor(Math.random() * 31);
+    const rando = Math.floor(Math.random() * 39);
     const question = idx[rando].q
     const answer = idx[rando].a
 //     console.log(rando)
