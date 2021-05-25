@@ -11,177 +11,243 @@ const client = new Discord.Client({
 
 const idx = {
     '0': {
-            'q': 'Describe the use of "SERIAL".',
-            'a': 'Auto-incrementing. Very useful for IDs.'
+            'q': 'How would you implement a session-based authentication in an Express application?',
+            'a': 'We can use the `express-session` package to create session middleware.\n\nThe session will create a cookie that is passed back and forth between the server and client.\n\nWe can set values on our session to indicate that we have been authenticated. On subsequent requests, when we read the cookie we see that we were logged in previously and can see who the user is.\n\nWith each request that comes in, we check if the authorization key has been created on the session previously. If it has been, we find the user\'s information and add it in to the local response variables in order to be able to use this information in subsequent middleware or routes.'
          },
 
     '1': {
-            'q': 'Describe the use of "VARCHAR(n)"',
-            'a': 'A string with a character limit of "n".'
+            'q': 'What requirements will you need in app.js in order to setup express-session?',
+            'a': 'const session = require(\'express-session\');\nconst cookieParser = require(\'cookie-parser\');\nconst { sessionSecret } = require(\'./config\');\nconst { restoreUser } = require(\'./auth\');\n\napp.use(cookieParser(sessionSecret));\n\napp.use(session({\nname: \'amusement-park-tracker.sid\',\nsecret: sessionSecret,\nresave: false,\nsaveUninitialized: false,\n})\n);\n\napp.use(restoreUser);'
          },
 
     '2': {
-            'q': 'Describe the use of "TEXT".',
-            'a': 'Does not have a character limit like VARCHAR, but it is less performant.'
+            'q': 'In auth.js, how do you set up function to create a session when a user logs in?',
+            'a': 'const loginUser = (req, res, user) => {\nreq.session.auth = {\nuserId: user.id,\n};\n};'
          },
 
     '3': {
-            'q': 'Describe the use of "BOOLEAN".',
-            'a': 'true/false inputs.'
+            'q': 'In auth.js, how do you set up function to remove a session when a user logs out?',
+            'a': 'const logoutUser = (req, res) => {\ndelete req.session.auth;\n};'
          },
 
     '4': {
-            'q': 'Describe the use of "SMALLINT".',
-            'a': 'Signed two-byte integer.\n (-32768 to 32767)' 
+            'q': 'In auth.js, how do you set up a middleware that can be appended to any path based on the user\'s authentication?',
+            'a': 'const requireAuth = (req, res, next) => {\nif (!res.locals.authenticated) {\nreturn res.redirect(\'/user/login\');\n}\nreturn next();\n};' 
          },
 
     '5': {
-            'q': 'Describe the use of "INTEGER".',
-            'a': 'Signed four-byte integer. (standard)'
+            'q': 'In auth.js, how do you setup a function to restore a session to an existing user?',
+            'a': 'const restoreUser = async (req, res, next) => {\nif (req.session.auth) {\nconst { userId } = req.session.auth;\ntry {\nconst user = await db.User.findByPk(userId);\nif (user) {\nres.locals.authenticated = true;\nres.locals.user = user;\nnext();\n}\n} catch (err) {\nres.locals.authenticated = false;\nnext(err);\n}\n} else {\nres.locals.authenticated = false;\nnext();\n}\n};\n\n'
          },
 
     '6': {
-            'q': 'Describe the use of "BIGINT".',
-            'a': 'Signed eight-byte integer. (very large numbers)'
+            'q': 'How would you setup app.js to store the session information in a database instead of local memory?',
+            'a': 'Utilize npm package - "connect-pg-simple"\nconst express = require(\'express\');\nconst session = require(\'express-session\');\nconst store = require(\'connect-pg-simple\');\nconst app = express();\napp.set(\'view engine\', \'pug\');\napp.use(\nsession({\nstore: new (store(session))(),\nsecret: \'a5d63fc5-17a5-459c-b3ba-6d81792158fc\',\nresave: false,\nsaveUninitialized: false,\n})\n);'
          },
 
     '7': {
-            'q': 'Define the use of "NUMERIC" or "DECIMAL".',
-            'a': 'Can store exact decimal values.'
+            'q': 'Define Asymmetric encryption',
+            'a': 'Asymmetric encryption uses two keys, a public key to encrypt and a private key to decrypt.Asymmetric encryption uses two keys, a public key to encrypt and a private key to decrypt.'
          },
 
     '8': {
-            'q': 'Describe the use of "TIMESTAMP".',
-            'a': 'This is used for date and time.'
+            'q': 'Define Bcrypt',
+            'a': 'Bcrypt is a strong password hashing algorithm.'
          },
 
     '9': {
-            'q': 'What is the purpose of "UNIQUE" constraint?',
-            'a': 'Indicates that the data for the column must not be repeated.'
+            'q': 'Difference between Authentication and Authorization',
+            'a': 'Authentication is the process of identifying an actor given known credentials whereas authorization is the process of checking privileges for an identified actor.'
          },
 
     '10': {
-            'q': 'What is the purpose of the "NOT NULL" constraint?',
-            'a': 'Indicates that there needs to be an input in that field.'
+            'q': 'Express middleware package to implement Cross-Site Resource Sharing',
+            'a': 'cors'
          },
 
     '11': {
-            'q': 'What does RDBMS stand for?',
-            'a': '"A stand-alone entity that is meaningful on its own." Typically this means a group of elements that form some sort of unit/feature together, but could also be applied to a single element if it has enough significance and stand-alone meaning.'
+            'q': 'Define express-bearer-token',
+            'a': 'Express middleware package that extracts a bearer token from a request.'
          },
     '12': {
-            'q': 'What\'s one way to define a foreign key when creating a table in SQL?',
-            'a': 'user_id INTEGER REFERENCES users(id)'
+            'q': 'Define express.json()',
+            'a': 'Built-in middleware that allows to parse the body of an HTTP request containing data formatted in json.'
          },
     '13': {
-            'q': 'What SQL statement will successfully create a \'users\' table with appropriate constraints?\n\nA. CREATE TABLE users(id SERIAL PRIMARY KEY,username VARCHAR(50) NULL FALSE,email VARCHAR(100) NULL FALSE);\n\nOR\n\nB. CREATE TABLE users(id SERIAL PRIMARY KEY, username VARCHAR(50) NOT NULL, email VARCHAR(100) NOT NULL );',
-            'a': 'B. CREATE TABLE users(id SERIAL PRIMARY KEY, username VARCHAR(50) NOT NULL, email VARCHAR(100) NOT NULL );'
+            'q': 'For an Album model, write RESTful endpoints to handle getting all the resources, creating a single resource, updating a single resource and deleting all resources.',
+            'a': 'getting all resources -> GET /albums\ncreating a single resource -> POST /albums\nupdating a single resource -> PATCH /album/:id\ndeleting all resources -> DELETE /albums'
          },
     '14': {
-            'q': 'Which of these is NOT a valid SQL data type?\n\nA. INTEGER\nB. VARCHAR\nC. STRING\nD. TEXT',
-            'a': 'C. STRING'
+            'q': 'What are the HTTP request methods',
+            'a': 'GET - Requests a resource\nPOST - Creates a resource\nPUT - Updates a resource\nPATCH - A partial modification to a resource.\nDELETE - Deletes the specified resource.'
          },
     '15': {
-            'q': 'What will this do?\nDELETE FROM friends;',
-            'a': 'Delete all rows from the "friends" table.'
+            'q': 'What does JWT stand for?',
+            'a': 'JSON Web Token'
          },
     '16': {
-            'q': 'What SQL keyword is used to sort the result-set?',
-            'a': 'ORDER BY'
+            'q': 'What does REST stand for?',
+            'a': 'Representational State Transfer - it is not a standard, just a convention.'
          },
     '17': {
-            'q': 'How can you return the number of records in the "persons" table',
-            'a': 'SELECT COUNT(*) FROM persons;'
+            'q': 'Define Symmetric Encryption',
+            'a': 'Symmetric encryption uses one value to determine how to encrypt and decrypt data.'
          },
     '18': {
-            'q': 'Which of these is NOT a valid SQL operator?\n\nA. IN\nB. LIKE\nC. MATCHES\nD. BETWEEN',
-            'a': 'C. MATCHES'
+            'q': 'What is a cryptographic salt?',
+            'a': 'A salt is small, random string or set of bits that gets appended to a user\'s password before hashing it, making rainbow attacks very impractical.'
          },
     '19': {
-            'q': 'Will the below successfully insert data?\n\n INSERT INTO friends(id, first_name, last_name) VALUES ("Rose", "Tyler") ("Martha", "Jones");',
-            'a': 'No. Missing arguments for "id".'
+            'q': 'What is a Rainbow Attack?',
+            'a': 'A rainbow attack involves hashing common passwords and searching for the results in a database.'
          },
     '20': {
-            'q': 'When you log into ```psql```, how do you know that the user is a "SUPERUSER"?',
-            'a': 'The prompt shows "=#" after the database name'
+            'q': 'What is hashing?',
+            'a': 'Hashing is the process of converting a message of any length into a short, fixed-length string. Hashed values cannot be translated back to their original input values.'
          },
     '21': {
-            'q': 'When you log into ```psql```, how do you know the user is a "NORMAL USER"?',
-            'a': 'The prompt shows "=>" after the database name.'
+            'q': 'What is OAuth?',
+            'a': 'A protocol that allows Internet users to grant applications access to their information via a trusted third party.'
          },
     '22': {
-            'q': 'How do you create a database with a specific user?\nEx. Database name: People\nUser: person_app',
-            'a': 'CREATE DATABASE People WITH OWNER person_app;'
+            'q': 'What is the purpose of auth tokens?',
+            'a': 'An application uses the access token to gain access to the user\'s data from the service API. Auth tokens do not have encryption or decryption properties.'
          },
     '23': {
-            'q': 'How do you remove connection privileges to a database from the public?',
-            'a': 'REVOKE CONNECT ON DATABASE {db_name} FROM PUBLIC;\n\nThis removes all public connection access.'
+            'q': 'What is the purpose of the JWT signature?',
+            'a': 'JWTs don\'t make the data unavailable. A JWT signature is generated from the header, payload and a secret key to ensure that no malicious actor has tampered with the data. It is impossible to generate a valid signature without a secret key.'
          },
     '24': {
-            'q': 'How do we grant a specific user a connection back to a database?',
-            'a': 'GRANT CONNECT ON DATABASE {db_name} FROM {specific user, PUBLIC, etc.};'
+            'q': '_____ is a way to use algorithms and secret keys to keep information secure',
+            'a': 'Cryptography'
          },
     '25': {
-            'q': 'How do we initialize a new Sequelize project?',
-            'a': 'npx sequelize init\n\nOR\n\nnpx sequelixe-cli init'
+            'q': '_____ is the process of translating something that\'s readable into something thats non-readable',
+            'a': 'Encryption'
          },
     '26': {
-            'q': 'What is the correct way to define belongsTo association on a model?',
-            'a': 'Post.belongsTo(models.User, {foreignKey: "userId"});'
+            'q': '______ is a password hashing function that\'s widely used to hash user passwords',
+            'a': 'BCrypt'
          },
     '27': {
-            'q': 'How would we query for a user with an id of 5?',
-            'a': 'User.findByPk(5);'
+            'q': '______ is the process of converting a message of any length into a short, fixed-length string.',
+            'a': 'Hashing'
          },
     '28': {
-            'q': 'What method do we use in Sequelize seed files to add multiple records to our database?',
-            'a': 'bulkInsert'
+            'q': 'Asymmetric encryption uses how many pieces of info and what are they?',
+            'a': 'Asymmetric data uses 2 pieces of Info\nA Public Key - to encrypt\nA Private Key - to decrypt'
          },
     '29': {
-            'q': 'How would you add a new user to the database with the username "Mitchell"?',
-            'a': 'User.create( { username: "Mitchell" } )'
+            'q': 'Can Hashed value be translated back to their original values?',
+            'a': 'nope, because it loses bits of its original message.'
          },
     '30': {
-            'q': 'What Sequelize method is used to delete a record from our database?',
-            'a': 'post.destroy()'
+            'q': 'What are the 2 types of encryption?',
+            'a': 'Symmetric and Asymmetric'
          }, 
     '31': {
-            'q': 'Define what a RDBMS is.',
-            'a': 'A software application that you run that connects to your programs, allowing you to store, modify, and retrieve data. '
+            'q': 'What is a hashed password often called?',
+            'a': '"password digest"'
          }, 
     '32': {
-            'q': 'Describe relational data.',
-            'a': 'In general, relational data is information that is connected to other pieces of information. When working with relational databases, we can connect two entries together utilizing foreign keys.'
+            'q': 'What is it called when you generate a small random string or set of bits and append it a users password before hashing?',
+            'a': 'salting - this guarantees a unique password digest to store in the database'
          }, 
     '33': {
-            'q': 'Define a database.',
-            'a': 'The actual location that data is stored. A database can be made up of many tables that each store specific kinds of information.'
+            'q': 'When is it a good idea to use encryption?',
+            'a': '- to secure over the wire communication between the client and the server.\n- Data at rest (Like credit card numbers)'
          }, 
     '34': {
-            'q': 'Define a database table.',
-            'a': 'Within a database, a table stores one specific kind of information. The records (entries) on these tables can be connected to records on other tables through the use of foreign keys.'
+            'q': 'Implement a strong hash function using bcrypt to securely store passwords',
+            'a': 'const bcrypt = require(\'bcryptjs\');\n\nasync function getHash(password, saltRounds) {\nconst hash = await bcrypt.hash(password, saltRounds);\nconsole.log(hash);\nreturn hash;\n}\n\nasync function isPassword(password, hash) {\nconst isPassword = await bcrypt.compare(password, hash);\nconsole.log(isPassword);\nreturn isPassword;\n}'
          }, 
     '35': {
-            'q': 'Describe the purpose of a primary key.',
-            'a': 'A primary key is used in the database as a unique identifier for the table. We often use an "id" field that simply increments with each entry. The incrementing ensures that each record has a unique identifier, even if their are other fields of the record that are repeated (two people with the same name would still need to have a unique identifier, for example). With a unique identifier, we can easily connect records within the table to records from other tables.'
+            'q': 'A protocol for authenticating users via a trusted 3rd party',
+            'a': 'OAuth'
          }, 
     '36': {
-            'q': 'Describe the purpose of a foreign key.',
-            'a': 'A foreign key is used as the connector from this record to the primary key of another table\'s record.'
+            'q': 'Checking a user\'s priveleges is an example of ...',
+            'a': 'Authorization'
          }, 
     '37': {
-            'q': 'Describe how to properly name things in PostgreSQL.',
-            'a': 'Names within postgres should generally consist of only lowercase letters, numbers, and underscores. Tables within a database are plural by convention, so a table for cats would typically be "cats" and office locations would be "office_locations" (all lowercase, underscores to replace spaces, plural)'
+            'q': 'Compare "Authentication" vs. "Authorization"',
+            'a': 'Authentication is the process of identifying an actor using given credentials.\nAuthorization is the process of checking what an identified actor is allowed to do and granting/preventing access to resources in accordance.'
          }, 
     '38': {
-            'q': 'When working on the command line how do you sign in to a database other than the default?',
-            'a': 'By providing the ```psql``` command with an argument\n\n```psql <database>```\n\nIf already logged in as default:\n\n```\\c <database>```'
+            'q': 'Compare encryption and hashing',
+            'a': 'Encryption is a two-way function; what is encrypted can be decrypted with the proper key. Hashing, however, is a one-way function that scrambles plain text to produce a unique message digest. Hashes cannot be decrypted.'
+        }, 
+    
+    '39': {
+            'q': 'Examples of strong, slow hashing algorithms that generate hashes safe to store in a database',
+            'a': 'Bcrypt, PBKDF2, Argon2'
+         }, 
+    '40': {
+            'q': 'Express middleware library that helps you implement Cross-Site Resource Sharing?',
+            'a': 'cors'
+         }, 
+    '41': {
+            'q': 'Express middleware library that helps you use the bearer tokens from a request',
+            'a': 'express-bearer-token'
+         }, 
+    '42': {
+            'q': 'HTTP method for ADDING A NEW resource',
+            'a': 'POST'
+         }, 
+    '43': {
+            'q': 'HTTP method for REMOVING a resource',
+            'a': 'DELETE'
+         }, 
+    '44': {
+            'q': 'HTTP method for REMOVING a resource',
+            'a': 'GET'
+         }, 
+    '45': {
+            'q': 'HTTP method for UPDATING a resource',
+            'a': 'PUT'
+         }, 
+    '46': {
+            'q': 'JWT stands for ...',
+            'a': 'JSON Web Token'
+         }, 
+    '47': {
+            'q': 'ReST stands for ...',
+            'a': 'Representational State Transfer'
+         }, 
+    '48': {
+            'q': 'Some examples of "broken" hash functions',
+            'a': 'md5, SHA1'
+         }, 
+    '49': {
+            'q': 'Three sections of a JWT',
+            'a': 'Header, Payload, Signature'
+         }, 
+
+    '50': {
+            'q': 'Usage of a list of hashes for common passwords, combatted by the use of cryptographic salts',
+            'a': 'Rainbow Table Attack'
+         }, 
+    '51': {
+            'q': 'What is the purpose of a JWT\'s header?',
+            'a': 'To set the type and signing algorithm of the JWT'
+         }, 
+    '52': {
+            'q': 'What is the purpose of the JWT\'s signature?',
+            'a': 'Verifies the origin of the JWT'
+         }, 
+    '53': {
+            'q': 'Explain "Broken" hash functions',
+            'a': 'hash functions that have been cracked. The original input to these functions can be determined by the hashed values produced.'
+         }, 
+    '54': {
+            'q': 'Explain "Strong" hash functions',
+            'a': 'hash functions that have not been cracked. Given a hashed value, we cannot (at this point) determine what the original input was without some brute force, trial and error calculations.'
          }, 
 };
 
 const regex = /robot/gi;
 function extractQ(index) {
-    const rando = Math.floor(Math.random() * 39);
+    const rando = Math.floor(Math.random() * 55);
     const question = idx[rando].q
     const answer = idx[rando].a
 //     console.log(rando)
